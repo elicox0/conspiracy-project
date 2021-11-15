@@ -1,18 +1,8 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[70]:
-
-
-from sklearn.model_selection import train_test_split
-from sklearn.linear_model import LogisticRegression
 import pandas as pd
-from matplotlib import pyplot as plt
 import numpy as np
-
-
-# In[95]:
-
 
 df = pd.read_csv("conspiracy_theories_data_orig.csv")
 verbose = False
@@ -39,17 +29,12 @@ df.drop(columns=['VCL'+str(i) for i in range(1, 17)], inplace=True)
 #I split up every instance of "major" to a category: HUM (Humanities), BUS (business/law), ART, STEM, and OTHER. 
 #This block creates a one-hot encoding for each of these.
 names = ["STEM", "HUM", "BUS", "OTHER", "ART"]
-for name in names:
-    # For each category, there is a file of strings of majors that should be classified as that category
-    # Read in the corresponding file
-    tf = open(f"{name}.txt", "r",newline='\n')
-    # Grab all the strings in the file
-    majors = [i[:-2] for i in tf.readlines()]
-    def func(x): # If string is in the list of majors, return a 1, else a 0
-        return int(x in majors)
-    func = np.vectorize(func)
-    df[name] = 1 
-    df[name] = df.major.apply(func) # Create  a new column with the one hot encoding for the given category
+for f in names:
+    with open(f"{name}.txt") as fin:
+        majors = [i[:-2] for i in fin.readlines()]
+    func = np.vectorize(lambda x: int(x in majors))
+    df[name] = 1
+    df[name] = df.major.apply(func)
     
 # One hot encode the other features
 categorical_columns = ['education','urban', 'gender', 'engnat', 'hand', 'religion', 'orientation','race', 'voted', 'married']
@@ -71,16 +56,10 @@ df.columns
 # are all fair game for regression. 
 
 
-# In[75]:
-
-
 # Are there any rows where the user just answered the same for all relevant questions? 
 # Are there any rows that were only partially completed? 
     # For the above two, could look at time to complete survey
 # TODO: One-hot encode the rest of the categorical data
-
-
-# In[81]:
 
 
 # df["introelapse"].hist()
@@ -107,15 +86,9 @@ if verbose:
 # subjects' answers that any of these responses should be dropped. 
 
 
-# In[78]:
-
-
 if verbose: 
     with pd.option_context('display.max_rows', None, 'display.max_columns', None):  # more options can be specified also
         display(df[df["introelapse"]/60 >= 60])
-
-
-# In[79]:
 
 
 # Looking at the 50 fastest responses
@@ -126,19 +99,10 @@ if verbose:
 # Again, none of these look totally wrong. 
 
 
-# In[80]:
-
-
 # Did any respondents put the same thing for each question in the GCB inventory? 
 print("# Rows with matching entries in columsn Q1, Q2, ..., Q15")
 print(sum(df[["Q" + str(i) for i in range(1, 16)]].apply(lambda x: min(x) == max(x), 1)))
 if verbose:
     with pd.option_context('display.max_rows', None, 'display.max_columns', None):
         display(df[df[["Q" + str(i) for i in range(1, 16)]].apply(lambda x: min(x) == max(x), 1)])
-
-
-# In[ ]:
-
-
-
 
