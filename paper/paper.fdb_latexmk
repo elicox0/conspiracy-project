@@ -1,0 +1,9 @@
+# Fdb version 3
+["pdflatex"] 1637175701 "paper.tex" "paper.pdf" "paper" 1637175701
+  "/usr/share/texmf-dist/web2c/texmf.cnf" 1617738065 39911 2da6c67557ec033436fe5418a70a8a61 ""
+  "/var/lib/texmf/web2c/pdftex/pdflatex.fmt" 1636226866 2812674 764133600bcaf9823006f49a850c8aec ""
+  "paper.aux" 1637175701 8 a94a2480d3289e625eea47cd1b285758 ""
+  "paper.tex" 1637175700 3579 e89c8866f3a2f7f934fc807f936ed358 ""
+  (generated)
+  "paper.pdf"
+  "paper.log"

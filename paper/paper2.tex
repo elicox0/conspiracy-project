@@ -1,0 +1,55 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage{booktabs}
+
+\title{paper}
+\author{Elijah Cox}
+\date{November 2021}
+
+\begin{document}
+
+\maketitle
+
+\section{Results}
+\begin{center}
+\begin{tabular}{lclc}
+\toprule
+\textbf{Dep. Variable:}    &       GCB        & \textbf{  R-squared:         } &     0.128   \\
+\textbf{Model:}            &       OLS        & \textbf{  Adj. R-squared:    } &     0.124   \\
+\textbf{Method:}           &  Least Squares   & \textbf{  F-statistic:       } &     30.39   \\
+\textbf{Date:}             & Wed, 17 Nov 2021 & \textbf{  Prob (F-statistic):} &  1.16e-65   \\
+\textbf{Time:}             &     12:17:05     & \textbf{  Log-Likelihood:    } &    563.65   \\
+\textbf{No. Observations:} &        2495      & \textbf{  AIC:               } &    -1101.   \\
+\textbf{Df Residuals:}     &        2482      & \textbf{  BIC:               } &    -1026.   \\
+\textbf{Df Model:}         &          12      & \textbf{                     } &             \\
+\textbf{Covariance Type:}  &    nonrobust     & \textbf{                     } &             \\
+\bottomrule
+\end{tabular}
+\begin{tabular}{lcccccc}
+                        & \textbf{coef} & \textbf{std err} & \textbf{t} & \textbf{P$> |$t$|$} & \textbf{[0.025} & \textbf{0.975]}  \\
+\midrule
+\textbf{TIPI2}          &       0.0122  &        0.002     &     5.760  &         0.000        &        0.008    &        0.016     \\
+\textbf{TIPI5}          &       0.0054  &        0.003     &     1.966  &         0.049        &     1.42e-05    &        0.011     \\
+\textbf{validity}       &       0.0719  &        0.017     &     4.112  &         0.000        &        0.038    &        0.106     \\
+\textbf{HUM}            &      -0.0400  &        0.015     &    -2.603  &         0.009        &       -0.070    &       -0.010     \\
+\textbf{education\_2}   &       0.0350  &        0.008     &     4.427  &         0.000        &        0.019    &        0.050     \\
+\textbf{urban\_3}       &       0.0260  &        0.008     &     3.162  &         0.002        &        0.010    &        0.042     \\
+\textbf{religion\_2}    &      -0.0842  &        0.009     &    -9.320  &         0.000        &       -0.102    &       -0.067     \\
+\textbf{religion\_7}    &       0.0605  &        0.014     &     4.209  &         0.000        &        0.032    &        0.089     \\
+\textbf{religion\_12}   &       0.1005  &        0.013     &     8.029  &         0.000        &        0.076    &        0.125     \\
+\textbf{orientation\_5} &       0.0461  &        0.017     &     2.724  &         0.006        &        0.013    &        0.079     \\
+\textbf{voted\_2}       &       0.0267  &        0.008     &     3.211  &         0.001        &        0.010    &        0.043     \\
+\textbf{married\_3}     &       0.0436  &        0.017     &     2.504  &         0.012        &        0.009    &        0.078     \\
+\textbf{const}          &       0.4523  &        0.020     &    22.751  &         0.000        &        0.413    &        0.491     \\
+\bottomrule
+\end{tabular}
+\begin{tabular}{lclc}
+\textbf{Omnibus:}       & 86.179 & \textbf{  Durbin-Watson:     } &    1.917  \\
+\textbf{Prob(Omnibus):} &  0.000 & \textbf{  Jarque-Bera (JB):  } &   42.271  \\
+\textbf{Skew:}          &  0.098 & \textbf{  Prob(JB):          } & 6.62e-10  \\
+\textbf{Kurtosis:}      &  2.393 & \textbf{  Cond. No.          } &     39.6  \\
+\bottomrule
+\end{tabular}
+%\caption{OLS Regression Results}
+\end{center}
+\end{document}
