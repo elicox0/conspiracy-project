@@ -2,6 +2,7 @@
     \author{Calix Barrus, Laren Edwards, Dallan Olsen, Elijah Cox}
     \usepackage[breakable]{tcolorbox}
     \usepackage{parskip} % Stop auto-indenting (to mimic markdown behaviour)
+    \usepackage{hyperref}
     
     \usepackage{iftex}
     \ifPDFTeX
@@ -19,9 +20,9 @@
     % Ensure that by default, figures have no caption (until we provide a
     % proper Figure object with a Caption API and a way to capture that
     % in the conversion process - todo).
-    \usepackage{caption}
-    \DeclareCaptionFormat{nocaption}{}
-    \captionsetup{format=nocaption,aboveskip=0pt,belowskip=0pt}
+ %   \usepackage{caption}
+ %   \DeclareCaptionFormat{nocaption}{}
+ %   \captionsetup{format=nocaption,aboveskip=0pt,belowskip=0pt}
 
     \usepackage{float}
     \floatplacement{figure}{H} % forces figures to be placed at the correct location
@@ -376,19 +377,16 @@
     
     \maketitle
     
-    
-
-    
+        
     \hypertarget{abstract}{%
 \section*{Abstract}\label{abstract}}
 
-The purpose of this project was to find what factors most correlate with
+The purpose of this project was to find the factors that correlate most strongly with
 a person believing or disbelieving in conspiracy theories, and if there
 are factors related strongly enough to create an effective
-classifier/regressor. To discover this we took a dataset that scored
-peoples' belief of conspiracy theories based on their answers to certain
-questions. The dataset also included demographics and other information
-on the subjects which we used with a linear regression model to find
+regressor. To discover this, we took a dataset containing people's answers to 
+questions regarding conspiracy $\text{theories}^{[\textbf{2}]}$, along with demographics and other information
+on the participants. We use various regression models on this dataset to find
 which traits most correlate to a belief in conspiracy theories.
 \section*{Introduction} Are there some factors that correlate with a person
 believing or disbelieving in conspiracy theories? Some believe that only
@@ -401,58 +399,104 @@ This question has been a topic of research for several decades and has
 only grown in importance over the past few years. As the COVID-19
 pandemic has dragged on, more and more people have turned to QAnon and
 Facebook for answers, instead of science. Thus, identifying traits that
-lead to conspiracy theory belief remains an important topic. Previous
-studies focus on correlating certain traits to conspiracy theory belief.
+lead to conspiracy theory belief remains an important topic. 
+
+Previous studies focus on correlating certain traits to conspiracy theory belief.
 For example, research done by Natasha Galliford and Adrian Furnham in
 ``Individual difference factors and beliefs in medical and political
-conspiracy theories'' attempted to find correlations between general
+conspiracy theories$\text{"}^{[\mathbf{2}]}$ attempted to find correlations between general
 traits. They used both demographic and psychological identifiers (age,
 race, sex, whether a person is introvered or extroverted, etc.) and
 correlated them with belief in political and medical conspiracy
 theories. Using step-wise regression, they concluded that religion and
 age tended to be big factors in whether one is more accepting of
-conspiracies. Another study called, ``Looking under the tinfoil hat:
+conspiracies. Another study, called, ``Looking under the tinfoil hat:
 Clarifying the personological and psychopathological correlates of
-conspiracy beliefs`` (Bowes et al., 2020) attempted to find correlation
+conspiracy beliefs`` (Bowes et al., 2020), attempted to find correlation
 between extremely specific traits such as abnormal personality and
-psychological disorders and conspiracy theory belief. They used
+psychological disorders and conspiracy theory belief. The authors used
 meta-regression to determine the strength of this correlation, and found
 that any personality trait that was correlated was usually weakly so.
-Our project will look at both general identifiers (such as religion,
+
+Our project examines both general identifiers (such as religion,
 race, and sex) and specific personality traits (such as is a person
-reserved, anxious, disorganized) as features for regression. We will
-then use linear regression on our dataset to see which factors have a
-strong correlation to conspiracy theory belief. The dataset we used was
+reserved, anxious, disorganized) as features for regression. We use linear and Random Forest regressors on our dataset to see which factors have a
+strong correlation to conspiracy theory belief. The dataset we use is
 taken from''Measuring belief in conspiracy theories: the generic
-conspiracist beliefs scale.'' It was a study that used the generic
+conspiracist beliefs scale'', a study that used the generic
 conspiracist beliefs scale (GCBS) score to quantify one's belief in
 conspiracy theories. The study also asked questions about demographic
-and personality traits which we will use to look for correlations. We
-used this dataset because it had an extensive amount of data, which we
-needed to get a good estimator, and because all the data was available
+and personality traits, which we use to construct a design matrix. We
+use this dataset because it has an extensive amount of data, which we
+need to get a good estimator, and because all the data are available
 to the public. However, it is important to keep in mind that the data
-came from an internet survey. Thus, it is likely that not every person
+come from an internet survey. Thus, it is likely that not every person
 took it seriously, and some people likely lied. To account for this, we
-analyzed the data to find people who may not have taken the survey
-seriously (took little to no time to complete the survey, put the same
-answer for every question, entered invalid responses, etc.). We then
-ended with a clean dataset that we were able to analyze. As part of our
-analysis, we found which traits correlated most with conspiracy theory
-belief. This is done by performing an L1 regularization on the data to
-find which traits had the strongest correlation. We then ran a linear
-regression on these traits to find exactly how they were correlated to
-conspiracy theory belief. \#\# Data Cleaning and Feature Engineering The
+analyze the data to find people who may not have taken the survey
+seriously (more specifically, those who took little to no time to complete the survey, put the same
+answer for every question, or entered invalid responses). 
+
+To determine which features of our data contribute to general belief in conspiracy theories, we use three forms of regression. The first is an $L_1$-regularized regression (Lasso regression), our reasoning being that our design matrix has over 100 features and we do not wish to overfit. The other (and better) methods are ElasticNet and Random Forest regressors. Each of these is discussed in more detail later. 
+\section*{Dataset}
+Below is an illustration of some of the questions participants in the survey were asked about their beliefs:\\
+\begin{center}
+\includegraphics[scale=1.1]{"../survey.png"}\\
+\end{center}
+The following table contains detailed descriptions of each feature of the dataset.
+\newpage
+    \begin{tabular}{ c|c }
+        Label & Description \\
+        \hline
+        \textbf{TIPI2} & Question on whether the subject consider themselves \\ & critical and quarrelsome. \\
+        \hline
+        \textbf{TIPI5} & Question on whether the subject considers themselves \\ & open to new experiences and complex. \\
+        \hline
+        \textbf{TIPI6} & Question on whether the subject considers themselves \\ & reserved and quiet. \\
+        \hline
+        \textbf{vocabulary\_misclassification} & All subjects were given a list of 16 words and asked if \\ & they knew what each word meant. 3 of \\ & the words were not real words. So this variable computes \\ & the misclassification rate of only these 3 words to \\ & find people who say they know the definition of a fake word. \\ & This helps us know which people are more \\ & likely to inflate their knowledge. \\
+        \hline
+        \textbf{STEM} & This is a binary variable saying whether or not \\ & the subject majored in STEM in college. \\
+        \hline
+        \textbf{education\_2} & Binary variable saying whether the subject only has a \\ & high school education or some other level of education. \\
+        \hline
+        \textbf{education\_3}  & Binary variable saying whether the subject only has \\ & a University degree or some other level of education. \\
+        \hline
+        \textbf{urban\_3} & The type of area that the subjects lived in as a child. \\ & This variable is a binary variable showing they either grew \\ & up in an urban environment or not. \\
+        \hline
+        \textbf{gender\_2} & Binary variable saying whether a subject is female or not. \\
+        \hline
+        \textbf{engnat\_1} & Binary variable saying whether a subject speaks \\ & English as their native language or not. \\
+        \hline
+        \textbf{religion\_2} & Binary variable saying whether a subject is \\ & Atheist or not. \\
+        \hline
+        \textbf{religion\_3} & Binary variable saying whether a subject is \\ & Buddhist or not. \\
+        \hline
+        \textbf{religion\_7} & Binary variable saying whether a subject is a \\ & non-Catholic, non-LDS, non-Protestant Christian or not. \\
+        \hline
+        \textbf{religion\_12} & Binary variable saying whether a subject is part \\ & of a religion that is not any major religion. \\
+        \hline
+        \textbf{orientation\_2} & Binary variable saying whether a subject's \\ & sexual orientation is bisexual or not. \\
+        \hline
+        \textbf{orientation\_5} & Binary variable saying whether a subject's sexual \\ & orientation is outside of heterosexual, homosexual, \\ & bisexual, and asexual. \\
+        \hline
+        \textbf{voted\_2} & Binary variable saying whether the subject didn't \\ & vote in the last national election. \\
+        \hline
+        \textbf{married\_1} & Binary variable saying whether the subject has \\ & never been married. \\
+    \end{tabular}
+%\newpage
+\section*{Data Cleaning and Feature Engineering} The
 survey includes many important features including (but not limited to)
 age, education, religion, major, and vocabulary comprehension. Most were
 categorized and one-hot encoded, but not all. Here we go over the
-changes we made in the fields. \#\#\# GCB - General Conspiracy Belief
-The first field we created was the GCB field, or ``General Conspiracy
+changes we make to fields with text or categorical values. 
+\subsubsection*{GCB - General Conspiracy Belief}
+The first field we create is the GCB field, or ``General Conspiracy
 Belief''. The first 15 questions of the survey asked about level of
 belief in specific conspiracies on a 1-5 scale. The questions were in
 the form of statements, like the following example: ``Groups of
 scientists manipulate, fabricate, or suppress evidence in order to
 deceive the public.'' The GCB is the average of these values for each
-person, so 2.5 would indicate an average level of belief of 2.5 in
+person, as computed in the following code block, so 0.5 would indicate an average level of belief of 0.5 (or a response of 2.5 in the survey, which is on a scale from 1 to 5) in
 various conspiracies.
 
 \begin{Shaded}
@@ -461,33 +505,33 @@ various conspiracies.
 \end{Highlighting}
 \end{Shaded}
 
-This was used as the target ``dependent'' variable in our analysis. It
+This is used as the target ``response'' variable in our analysis. It
 simplifies the regression a lot to use an average of these answers
-rather than trying to have 15 different dependent variables.
+rather than trying to have 15 different response variables.
 
 \hypertarget{major}{%
 \subsubsection*{Major}\label{major}}
 
-The last field that we made large changes to was the ``major'' field.
-Here, survey respondents would put in their major as a string. Because
-this was a free response, we had hundreds of unique responses for major.
+We make several changes to the [college] ``major'' field.
+Here, survey respondents put in their major as a string; because
+this was a free response, we have hundreds of unique responses.
 Because there are so many majors (and so many major misspellings), we
-decided to group the responses together in larger categories. We used
-STEM, Humanities, Business/Law, Arts, and Other as our categories.
-Logically, this makes sense because we expect majors within the same
+group the responses together in larger categories, namely
+STEM, Humanities, Business/Law, Arts, and Other.
+We understand that we are making the simplifying assumption that majors within the same
 sector to have similar correlations to a person's belief in
-conspiracies. Because there were such varied responses, we initially
+conspiracies, but this loss in information is worth the time it saves us, as we no longer have to inspect each response. Because there were such varied responses, we initially
 assigned each major to a group manually. We then one-hot encoded these
-new variables to facilitate performance of classification. In order to
-enable future expansion of the data used, we implemented a flexible
-major classification strategy that can sort new major strings robustly
-into the existing categories. This strategy uses a Levenshtein edit
-distance to find the category with the most similar major in it. This is
-calculated with a function that uses recursion to determine the
+new variables to facilitate performance of classification. But in order to
+enable future expansion of the data used, we needed to implement a flexible
+major classification strategy that could sort new major strings robustly
+into the existing categories. We do this using Levenshtein edit
+distance, which is
+calculated using recursion to determine the
 difference between two strings in terms of how many primitive edits it
-takes to permute one into the other. On testing, this strategy worked
-quite well and proved to be reliable in categorizing new majors. Below
-is the code detecting unassigned majors and using the Levenshtein
+takes to permute one into the other. The major category with the lowest Levenshtein distance to any newly observed response is taken to be the correct category for that response. Although this may result in some misclassified majors, using a natural language processing method to improve performance is outside the scope of this paper.
+
+Below is the code detecting unassigned majors and using the Levenshtein
 function to categorize the majors accordingly.
 
 \begin{Shaded}
@@ -499,36 +543,41 @@ function to categorize the majors accordingly.
     \ControlFlowTok{for}\NormalTok{ category }\KeywordTok{in}\NormalTok{ categories:}
 \NormalTok{        tf }\OperatorTok{=} \BuiltInTok{open}\NormalTok{(}\SpecialStringTok{f"}\SpecialCharTok{\{}\NormalTok{category}\SpecialCharTok{\}}\SpecialStringTok{.txt"}\NormalTok{, }\StringTok{"r"}\NormalTok{,newline}\OperatorTok{=}\StringTok{\textquotesingle{}}\CharTok{\textbackslash{}n}\StringTok{\textquotesingle{}}\NormalTok{)}
 \NormalTok{        majors }\OperatorTok{=}\NormalTok{ [i[:}\OperatorTok{{-}}\DecValTok{2}\NormalTok{] }\ControlFlowTok{for}\NormalTok{ i }\KeywordTok{in}\NormalTok{ tf.readlines()]}
-\NormalTok{        score[category] }\OperatorTok{=} \BuiltInTok{min}\NormalTok{([levenshteinDistance(}\BuiltInTok{str}\NormalTok{(maj),}\BuiltInTok{str}\NormalTok{(unknown\_string)) }\ControlFlowTok{for}\NormalTok{ maj }\KeywordTok{in}\NormalTok{ majors])}
+\NormalTok{        score[category] }\OperatorTok{=} \BuiltInTok{min}\NormalTok{([levenshteinDistance(}\BuiltInTok{str}\NormalTok{(maj),}\BuiltInTok{str}\NormalTok{(unknown\_string))}\OperatorTok{\textbackslash{}}
+\ControlFlowTok{	for}\NormalTok{ maj }\KeywordTok{in}\NormalTok{ majors])}
 \NormalTok{    min\_key }\OperatorTok{=} \BuiltInTok{min}\NormalTok{(score, key}\OperatorTok{=}\NormalTok{score.get)}
 \NormalTok{    df.loc[index,min\_key] }\OperatorTok{=} \DecValTok{1}
 \end{Highlighting}
 \end{Shaded}
 
 \hypertarget{vocabulary_knowledge-vocabulary_misclassification}{%
-\subsubsection*{vocabulary\_knowledge,
-vocabulary\_misclassification}\label{vocabulary_knowledge-vocabulary_misclassification}}
+\subsubsection*{Vocabulary Knowledge and
+Vocabulary Misclassification}\label{vocabulary_knowledge-vocabulary_misclassification}}
 
-The survey we used included questions in which the respondent identified
+The survey we use includes questions in which the respondent identified
 the meaning of various vocabulary words. Correct answers for each
-question were recorded as 1s, and incorrect as 0s. We did a simple
+question were recorded as 1s, and incorrect as 0s. We perform a simple
 averaging calculation to determine a person's approximate vocabulary
 knowledge (conceivably this works as a very rough proxy for general
-lexicographic knowledge). Omitted VCL\_\_ questions were categorized
-into a slightly separate variable, since they were nonsense words
-included to provide general validity.
+lexicographic knowledge). Omitted VCL\_\_ questions are categorized
+into a separate variable "validity", since they were nonsense words
+included to prevent overconfident respondents from getting a perfect score.
+As illustrated in the code below, vocabulary questions 6, 9, and 12 were the
+nonsense words, and the rest of the questions are a true vocabulary knowledge
+test.
 
 \begin{Shaded}
 \begin{Highlighting}[]
 \NormalTok{df[}\StringTok{\textquotesingle{}validity\textquotesingle{}}\NormalTok{] }\OperatorTok{=}\NormalTok{ df[[}\StringTok{\textquotesingle{}VCL6\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}VCL9\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}VCL12\textquotesingle{}}\NormalTok{]].mean(axis}\OperatorTok{=}\DecValTok{1}\NormalTok{)}
-\NormalTok{df[}\StringTok{\textquotesingle{}vocabulary\_knowledge\textquotesingle{}}\NormalTok{] }\OperatorTok{=}\NormalTok{ df[[}\StringTok{\textquotesingle{}VCL\textquotesingle{}} \OperatorTok{+} \BuiltInTok{str}\NormalTok{(i) }\ControlFlowTok{for}\NormalTok{ i }\KeywordTok{in}\NormalTok{ [}\DecValTok{1}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{3}\NormalTok{, }\DecValTok{4}\NormalTok{, }\DecValTok{5}\NormalTok{, }\DecValTok{7}\NormalTok{, }\DecValTok{8}\NormalTok{, }\DecValTok{10}\NormalTok{, }\DecValTok{11}\NormalTok{, }\DecValTok{13}\NormalTok{, }\DecValTok{14}\NormalTok{, }\DecValTok{15}\NormalTok{, }\DecValTok{16}\NormalTok{]]].mean(axis}\OperatorTok{=}\DecValTok{1}\NormalTok{)}
+knowledge \OperatorTok{=} [1,2,3,4,5,7,8,10,11,13,14,15,16]
+\NormalTok{df[}\StringTok{\textquotesingle{}vocabulary\_knowledge\textquotesingle{}}\NormalTok{] }\OperatorTok{=}\NormalTok{ df[[}\StringTok{\textquotesingle{}VCL\textquotesingle{}} \OperatorTok{+} \BuiltInTok{str}\NormalTok{(i) }\ControlFlowTok{for}\NormalTok{ i }\KeywordTok{in}\NormalTok{ knowledge]].mean(axis}\OperatorTok{=}\DecValTok{1}\NormalTok{)}
 \end{Highlighting}
 \end{Shaded}
 
 \hypertarget{time-feature-engineered}{%
-\subsubsection*{Time feature engineered}\label{time-feature-engineered}}
+\subsubsection*{Response Time}\label{time-feature-engineered}}
 
-For further feature engineering, we looked at the respondents who took
+For further feature engineering, we examine the respondents who took
 the least amount of time and the most time to complete the survey, as
 well as the respondents who put the same answer for every question on
 belief in conspiracy theories. However, upon visual inspection of all of
@@ -538,31 +587,32 @@ not be thrown out. We concluded that it is likely that the publishers of
 this survey data performed similar data cleaning and so any unfinished
 surveys or invalid responses would already be thrown out.
 
+%\newpage
 \hypertarget{methods}{%
 \section*{Methods}\label{methods}}
 
-To analyze our data we tried to use OLS with regularization, and Random
-Forest Regression. We first used OLS with \(L_1\)-regularization to see
-if how many of the 100+ columns in our cleaned data were irrelevant.
-After cutting the 100+ columns down to the 20 columns with nonzero
-coefficients, we ran OLS without any regularization on the reduced set
-of columns. In addition to trying L1 regularization, on the entire data
-set we did a grid search of hyper parameters for Elastic Net regression,
-as well as a grid search of hyper parameters for Random Forests. In both
-cases we used grid search with 5-way cross validation looking to
+As mentioned in the introduction, the three methods we compare are $L_1$-regularized least-squares regression, ElasticNet regression, and a Random Forest ensemble of regression trees. We first use least-squares regression with \(L_1\)-regularization, hoping to remove any irrelevant features.
+We use $\alpha=1\times10^{-3}$, which reduces
+the 100+ columns down to 20 columns with nonzero
+coefficients. We then run OLS without any regularization on the reduced set
+of columns simply so that the results table won't include features with coefficients of zero (and because, at the time of writing, statsmodels has not yet implemented the summary display for regularized regression models). The next methods we use are ElasticNet and Random Forest regression. In both
+cases we use a grid search across various hyperparameters, illustrated in Table~\ref{tab:hyper} in the Results section, with 5-way cross validation, looking to
 maximize the classifier's \(R^2\) value. With the Random Forests, we
 limited the possible tree parameters to preclude overfitting. In fact,
 by letting the max tree depth be 10, we found the tree to have an
 \(R^2\) value of over .5, much higher than the \(.15\)-\(.2 R^2\) values
-found by the OLS estimators. We concluded that the forest was likely
+found by the least-squares estimators. We concluded that the forest was likely
 very overfit, and so restricted ourselves to more conservative hyper
-parameters. 
+parameters. Each Random Forest we tried used between 100 and 200 tree estimators, with the optimal Random Forest using 200 trees.
 \newpage
 \section*{Results}
-For our initial attempt using \(L_1\)-regularization, the figure below
+ Table~\ref{tab:lasso}
 shows the coefficient of determination \(R^2\) and correlation
-coefficients for different features.
-\begin{center}
+coefficients for different features for our initial attempt using \(L_1\)-regularization.
+\begin{table}[ht]
+	\centering
+	\caption{Lasso Regression Results.} \label{tab:lasso}
+	\vspace{1mm}
 \begin{tabular}{lclc}
 \toprule
 \textbf{Dep. Variable:}                &       GCB        & \textbf{  R-squared:         } &     0.135   \\
@@ -605,83 +655,92 @@ coefficients for different features.
 \textbf{Kurtosis:}      &  2.425 & \textbf{  Cond. No.          } &     80.3  \\
 \bottomrule
 \end{tabular}
-%\caption{OLS Regression Results}
-\end{center}
-
-Notes: \newline
- [1] Standard Errors assume that the covariance matrix of the errors is
-correctly specified.
+\end{table}
 
 None of our features seems to be strongly correlated with GCB, and we
-only account for about 13.9\% of the variance in beliefs with these
-features. Among what we did find, however, the strongest predictors of
+only account for about 13.5\% of the variance in beliefs with these
+features. Among what we do find, however, the strongest predictors of
 belief in conspiracy theories seem to be religion (in particular marking
-`other' as one's choice of religion), low knowledge of the given
-vocabulary words, and age. The engineered features ``vocabulary
-knowledge'' and ``vocabulary\_misclassification'' determine this.
+`other' as one's choice of religion), age, and low knowledge of the given
+vocabulary words, as determined by the engineered features ``vocabulary
+knowledge'' and ``vocabulary\_misclassification''.
 
-We got better results using a grid search on the sklearn implementations
-of ElasticNet and RandomForestRegressor. As can be seen in the below
-table, we got our best results using a random forest with an \(R^2\) of
-.2297, much better than the .139 than plain OLS. Note that the random
-forest listed here is not the best (in terms of \(R^2\)) random forest
+We achieve better results using a grid search on the scikit-learn implementations
+of ElasticNet and RandomForestRegressor. As Table~\ref{tab:hyper} illustrates, we achieve the best results (\(R^2\) =
+.2297) using a Random Forest. Note that the Random
+Forest listed here is not the best (in terms of \(R^2\)) Random Forest
 that we were able to generate, but it is the best that has hyper
-parameters that don't lend themselves to overfitting.
+parameters that don't lend themselves to overfitting. 
 
-\begin{center}
-	\begin{tabular}{ |c|c|c| } 
+\begin{table}[ht]
+	\centering
+	\caption{Best Estimators and Results.} \label{tab:hyper} 
+	\vspace{1mm}
+\begin{tabular}{ |c|c|c| } 
        \hline
        Model & Best Hyperparameters & $R^2$ \\ 
        \hline
-       sklearn ElasticNet & \verb|alpha| = .001, \verb|l1_ratio| = .4842 & .1811 \\ 
+       sklearn ElasticNet & $\alpha = .001$, \verb|l1_ratio| $= .4842$ & .1811 \\ 
        sklearn RandomForestRegressor & \verb|max_depth| = 5, \verb|min_samples_leaf| = 6 & .2297 \\
        \hline
 	\end{tabular}
-\end{center}
+\end{table}
 
-In the next table, we see which features were most impactful in the
-Random Forest. Note that a high gini importance indicates that a feature
+In Table~\ref{tab:gini}, we see which features are most important in the
+Random Forest. Note that a high Gini importance indicates that a feature
 is important in determining whether or not a person believes in
 conspiracy theories, but that feature is not necessarily positively
-correlated (it could be negatively correlated). The way the OLS
+correlated (it could be negatively correlated). For example, the way the least-squares
 regression interpreted these features, religion\_2,
-vocabulary\_knowledge, and TIPI10 were negatively correlated, and
-religion\_12 and age were positively correlated.
+vocabulary\_knowledge, and TIPI10 were negatively correlated with GCB, and
+religion\_12 and age were positively correlated with GCB.
 
-\begin{center}
+\begin{table}[ht]
+	\centering
+	\caption{Feature Importance.} \label{tab:gini}
+	\vspace{1mm}
 \begin{tabular}{ |c|c|c| } 
    \hline
-   Column & Meaning & Gini Importance \\ 
+   Feature & Meaning & Gini Importance \\ 
    \hline
    \verb|religion_2| & Atheist & .2040 \\ 
    \verb|vocabulary_knowledge| & \% of words marked correctly & .1749 \\ 
-   \verb|religion_12| & Other Religion & .1218 \\ 
+   \verb|religion_12| & "Other" Religion & .1218 \\ 
    \verb|age| & Years Old & .0664 \\ 
    \verb|TIPI10| & Conventional, Uncreative Personality & .0566 \\ 
    \hline
 \end{tabular}
-\end{center}
+\end{table}
 
-By analyzing this data we found that among the group of people that was
+These results indicate that among the group of people that was
 surveyed, there are a number of features which are definitely correlated
-with belief in conspiracy theories. These features are definitely
-correlated among the group of survey respondents, and it is possible
-that these features could also be very gently correlated with conspiracy
+with belief in conspiracy theories. It is possible
+that these features are also correlated with conspiracy
 belief in the population in general. However, it is important to note
-that 1) our \(R^2\) values indicate that our model accounts for very
-little variation of belief in conspiracy beliefs and 2) since this was
+that 
+\begin{enumerate}
+\item our \(R^2\) values indicate that our model accounts for very
+little of the variance in belief in conspiracy beliefs and 
+\item since this was
 an online volunteer survey, we have no reason to believe that the
 respondents are representative of society or any general group.
-None of our features seems to be strongly correlated with GCB, and we only account for about 13.9$\%$ of the variance in beliefs with these features. Among what we did find, however, the strongest predictors of belief in conspiracy theories seem to be religion (in particular marking ‘other’ as one’s choice of religion), low knowledge of the given vocabulary words, and age. The engineered features "vocabulary knowledge" and "vocabulary\_misclassification" indicate the knowledge of vocab words, and age is a quasi-continuous variable. The following figure is a heatmap of General Conspiracy Belief in relation to a person’s age and vocabulary score. Although we do see a concentration of higher GCB in the lower age/lower vocab score area, there is no strong correlation immediately apparent. This matches up with the low predictive power of our various regressors - correlations do exist, but are not strong.
-\begin{center}
+\end{enumerate}
+
+With these things in mind, we note that the strongest predictors of belief in conspiracy theories seem to be religion (in particular marking ‘other’ or 'atheist' as one’s choice of religion), low knowledge of the given vocabulary words, and age. The two most important quantitative variables are the engineered vocabulary score features and age; Figure \ref{fig:heat} is a heatmap of General Conspiracy Belief in relation to a person’s age and vocabulary score. Although we do see a concentration of higher GCB in the lower age/lower vocab score area, there is no strong correlation immediately apparent. This matches up with the low predictive power of our various regressors - correlations do exist, but are not strong.
+\begin{figure}[ht]
+	\centering
 \includegraphics[scale=1.2]{"../VocabAge_GCB.png"}
-\end{center}
+	\vspace{-14mm}
+	\caption{Heatmap of the most Gini-important quantitative features.}
+	\label{fig:heat}
+\end{figure}
+%\newpage
     \hypertarget{ethical-implications}{%
 \section*{Ethical Implications}\label{ethical-implications}}
 
 It is important to remember that, although we have found traits with
 positive and negative correlation to conspiracy theory belief, our model
-has a very low R\^{}2 score. That means that our model does not account
+has a low $R^2$ score, so it does not account
 for a lot of the variance in the data. Thus, just because someone may
 have many of the traits that correlate with conspiracy theory belief,
 that does not mean they do believe in conspiracy theories. Human beings
@@ -691,7 +750,8 @@ above should be used as merely a soft guide to indicate that a person
 may believe conspiracy theories. This could be useful in anticipating a
 group's beliefs prior to giving them information about controversial
 topics, or in determining the issues most important to a group of
-people. But again, it should not be used to make absolute assumptions.
+people. But it should not be relied on for any important decisions.
+
 Additionally, it is important that predictions from this model not be
 used to discriminate against individuals or disqualify them from
 anything, such as jobs or political offices. High correlations are good
@@ -703,15 +763,20 @@ vs.~nurture, psychology, and other topics in the field of study.
 \newpage
 \hypertarget{references}{%
 \section*{References}\label{references}}
-
-Bowes, S. M., Costello, T. H., Ma, W., \& Lilienfeld, S. O. (2021).
+\begin{enumerate}
+\item Bowes, S. M., Costello, T. H., Ma, W., \& Lilienfeld, S. O. (2021).
 Looking under the tinfoil hat: Clarifying the personological and
 psychopathological correlates of conspiracy beliefs. Journal of
 Personality, 89(3), 422-436.
-https://doi.org/https://doi.org/10.1111/jopy.12588 Galliford, N., \&
-Furnham, A. (2017). Individual difference factors and beliefs in medical
+\newline\url{https://doi.org/https://doi.org/10.1111/jopy.12588}
+
+\item Galliford, N., \& Furnham, A. (2017). Individual difference factors and beliefs in medical
 and political conspiracy theories. Scandinavian Journal of Psychology,
-58(5), 422-428. https://doi.org/https://doi.org/10.1111/sjop.12382
+58(5), 422-428. \newline\url{https://doi.org/https://doi.org/10.1111/sjop.12382}
+
+\item Brotherton, R., French, C. C., \& Pickering, A. D. (2013). Measuring belief in conspiracy theories: The generic conspiracist beliefs scale. Frontiers in Psychology, 4, 279. \newline\url{https://doi.org/10.3389/fpsyg.2013.00279}
+
+\end{enumerate}
 
 
     % Add a bibliography block to the postdoc
